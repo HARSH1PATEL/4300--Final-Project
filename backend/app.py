@@ -3,6 +3,8 @@ import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
+from nltk.tokenize import TreebankWordTokenizer
+from cosine_similarity import *
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -14,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 MYSQL_USER = "root"
 MYSQL_USER_PASSWORD = "mishakka"
 MYSQL_PORT = 3306
-MYSQL_DATABASE = "yelp"
+MYSQL_DATABASE = "data"
 
 mysql_engine = MySQLDatabaseHandler(MYSQL_USER,MYSQL_USER_PASSWORD,MYSQL_PORT,MYSQL_DATABASE)
 
@@ -31,16 +33,17 @@ CORS(app)
 #             3:'Geeks', 4:'for',
 #             5:'Geeks'}
 def sql_search(query):
-    city = query.split("; ")[0]
-    keywords = query.split("; ")[1].split()
-    query_init = f"SELECT DISTINCT business_filtered.bus_name, business_filtered.city,business_filtered.us_state FROM reviews JOIN (SELECT * FROM businesses WHERE LOWER(city) LIKE '%%{city.lower()}%%') business_filtered ON (business_filtered.bus_id = reviews.bus_id) WHERE "
-    like_clauses = []
-    for x in range(len(keywords)):
-        like_clauses.append(f"LOWER(rev_text) LIKE '%%{keywords[x].lower()}%%'")
-    like_clause_str = ' OR '.join(like_clauses)
-    query_sql_city = query_init + like_clause_str
-    keys = ["bus_name","city","us_state"]
-    data = mysql_engine.query_selector(query_sql_city)
+    # city = query.split("; ")[0]
+    # keywords = query.split("; ")[1].split()
+    # query_in = f"SELECT * FROM attrs LIMIT 500"
+    # like_clauses = []
+    # for x in range(len(keywords)):
+    #     like_clauses.append(f"LOWER(rev_text) LIKE '%%{keywords[x].lower()}%%'")
+    # like_clause_str = ' OR '.join(like_clauses)
+    # query_sql_city = query_init + like_clause_str
+    query_sql = f"""SELECT * FROM attrs LIMIT 5"""
+    keys = ["state","attraction","description"]
+    data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
 @app.route("/")
@@ -49,7 +52,32 @@ def home():
 
 @app.route("/episodes")
 def episodes_search():
-    text = request.args.get("title")
-    return sql_search(text)
+    query = request.args.get("title")
+    response = json.loads(sql_search(query))
+    for result in response:
+        desc = result['description']
+        toks = TreebankWordTokenizer().tokenize(desc)
+        result['toks'] = toks
+    
+    inv_idx = build_inverted_index(response)
+    print(inv_idx)
+    idf = compute_idf(inv_idx=inv_idx, n_docs=len(response))
+    print(idf)
+    doc_norms = compute_doc_norms(inv_idx, idf, len(response))
+    query_words = {}
+    for word in TreebankWordTokenizer().tokenize(query):
+        if word in query_words:
+            query_words[word] += 1
+        else:
+            query_words[word] = 1
+    print(query_words)
+    inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
+    print(inv_idx)
+    scores = accumulate_dot_scores(query_words, inv_idx, idf)
+    print(scores)
+    results = index_search(query, inv_idx, idf, doc_norms, scores)
+    print(len(results))
 
-# app.run(debug=True)
+    return response
+
+app.run(debug=True)
