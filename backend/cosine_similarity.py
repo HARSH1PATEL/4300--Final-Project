@@ -169,9 +169,12 @@ def accumulate_dot_scores(query_word_counts, index, idf):
     doc_scores = {}
     for word in query_word_counts:
         q_i = query_word_counts[word]
+        # print(word in index)
+        # print(index)
         if word in index:
             ind = index[word]
             for doc in ind:
+                # print(doc)
                 doc_id = doc[0]
                 freq = doc[1]
                 if doc_id in doc_scores:
@@ -239,3 +242,14 @@ def index_search(query, index, idf, doc_norms, scores, score_func=accumulate_dot
         lst.append((scores[doc_id]/denom, doc_id))
     lst.sort(key=sortFirst, reverse=True)
     return lst
+
+def get_responses_from_results(response, results):
+    """ 
+    Take results of index search and get list of attractions
+    """
+    acc = []
+    for tup in results:
+        id = tup[1]
+        acc.append(response[id])
+    return acc
+

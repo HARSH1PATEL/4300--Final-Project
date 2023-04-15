@@ -41,7 +41,7 @@ def sql_search(query):
     #     like_clauses.append(f"LOWER(rev_text) LIKE '%%{keywords[x].lower()}%%'")
     # like_clause_str = ' OR '.join(like_clauses)
     # query_sql_city = query_init + like_clause_str
-    query_sql = f"""SELECT * FROM attrs LIMIT 5"""
+    query_sql = f"""SELECT * FROM attrs"""
     keys = ["state","attraction","description"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
@@ -60,9 +60,9 @@ def episodes_search():
         result['toks'] = toks
     
     inv_idx = build_inverted_index(response)
-    print(inv_idx)
+    # print(inv_idx)
     idf = compute_idf(inv_idx=inv_idx, n_docs=len(response))
-    print(idf)
+    # print(idf)
     doc_norms = compute_doc_norms(inv_idx, idf, len(response))
     query_words = {}
     for word in TreebankWordTokenizer().tokenize(query):
@@ -70,14 +70,13 @@ def episodes_search():
             query_words[word] += 1
         else:
             query_words[word] = 1
-    print(query_words)
+    # print(query_words)
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
-    print(inv_idx)
+    # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
-    print(scores)
+    # print(scores)
     results = index_search(query, inv_idx, idf, doc_norms, scores)
-    print(len(results))
-
-    return response
+    user_results = get_responses_from_results(response, results)
+    return user_results
 
 app.run(debug=True)
