@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "mishakka"
+MYSQL_USER_PASSWORD = "AstroApes711"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "data"
 
@@ -50,7 +50,7 @@ def sql_search(query):
 def home():
     return render_template('base.html',title="sample html")
 
-@app.route("/episodes")
+@app.route("/attractions")
 def episodes_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))

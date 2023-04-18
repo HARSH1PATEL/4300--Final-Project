@@ -4,86 +4,92 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+
 <body>
     <div class="full-body-container">
+
         <div class="top-text">
-            <div class="google-colors">
+
+            <div class="title">
                 <h1>TravelForMe</h1>
-                <!-- <h1 id="google-c">C</h1>
-                <h1 id="google-s">S</h1>
-                <h1 id="google-4">4</h1>
-                <h1 id="google-3">3</h1>
-                <h1 id="google-0-1">0</h1>
-                <h1 id="google-0-2">0</h1> -->
             </div>
-            <div class="p-03 instrutions">
-                <p id="instruct">Get Travel Recs! Input in following format: "city of interest"; "attribute 1", "attribute 2" ,...</p>
+
+            <div class="text">
+                <p id="instruct">Get travel recs by inputting what you liked about your previous travels below!</p>
             </div>
-            <!-- <div class="input-box" onclick="sendFocus()">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a Keeping up with the Kardashians episode" id="filter-text-val" onkeyup="filterText()">
-            </div> -->
+     
+
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Previous Destination 1" id="filter-text-val">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1">
             </div>
-            <!-- <div class="input-box">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about this experience." id="filter-text-val2">
-            </div>
+
+
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Previous Destinaton 2" id="filter-text-val3">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val2">
             </div>
+
+
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about this experience." id="filter-text-val4">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val3">
             </div>
+
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Previous Destination 3" id="filter-text-val5">
+                <input placeholder="Describe what you want in a new experience." id="filter-text-val4">
             </div>
-            <div class="input-box">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about this experience." id="filter-text-val6">
-            </div> -->
+
             <div class="button" onclick="sendFocus()">
-                <button type="button" onclick="filterText()">Search</button>
+                <button type="button" onclick="filterText()"> Find Your Travel Attractions! </button>
             </div>
-        </div>
-
-        <div id="city-box">
 
         </div>
 
-        <div id="answer-box">
-
-        </div>
+        <div class="results-display" id="answer-box"></div>
     </div>
 
     <script>
 
-        function answerBoxTemplate(bus_name,city, us_state){
-            return `<div class=''>
-                <h3 class='episode-title'>${bus_name}</h3>
-                <p class='episode-desc'>${city}</p>
-                <p class='episode-desc'>${us_state}</p>
+        function answerBoxTemplate(attraction,state, description){
+            return `<div class='results'>
+                <h3 class='attraction'>${attraction}</h3>
+                <p class='state'>${state}</p>
+                <p class='desc'>${description}</p>
             </div>`
         }
 
         function sendFocus(){
-            document.getElementById('filter-text-val').focus()
+            document.getElementById('filter-text-val1').focus()
+            document.getElementById('filter-text-val2').focus()
+            document.getElementById('filter-text-val3').focus()
+            document.getElementById('filter-text-val4').focus()
         }
 
         function filterText(){
             document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+
+            console.log(document.getElementById("filter-text-val1").value) 
+            console.log(document.getElementById("filter-text-val2").value) 
+            console.log(document.getElementById("filter-text-val3").value) 
+            console.log(document.getElementById("filter-text-val4").value) 
+
+            var input1 = document.getElementById("filter-text-val1").value;
+            var input2 = document.getElementById("filter-text-val2").value;
+            var input3 = document.getElementById("filter-text-val3").value;
+            var input4 = document.getElementById("filter-text-val4").value;
+            
+            var combined = input1 + " " + input2 + " " + input3 + " " + input4 + " " + input4 + " " + input4;
+
+            console.log(combined)
+
+            fetch("/attractions?" + new URLSearchParams({ title: combined }).toString())
             .then((response) => response.json())
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attraction,row.state, row.description)
+                tempDiv.innerHTML = answerBoxTemplate(row.attraction, row.state, row.description)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 
