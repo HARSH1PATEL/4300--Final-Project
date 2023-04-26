@@ -79,4 +79,4 @@ def episodes_search():
     user_results = get_responses_from_results(response, results)
     return user_results
 
-# app.run(debug=True)
+app.run(debug=True)
