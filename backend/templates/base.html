@@ -88,7 +88,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attraction, row.state, row.description)
+                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 

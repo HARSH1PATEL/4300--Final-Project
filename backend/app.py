@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "gan4646"
+MYSQL_USER_PASSWORD = "mishakka"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "data"
 
@@ -42,7 +42,7 @@ def sql_search(query):
     # like_clause_str = ' OR '.join(like_clauses)
     # query_sql_city = query_init + like_clause_str
     query_sql = f"""SELECT * FROM attrs"""
-    keys = ["state","attraction","description"]
+    keys = ["state_name","attr_name","desc_text"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
@@ -55,7 +55,7 @@ def episodes_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))
     for result in response:
-        desc = result['description']
+        desc = result['desc_text']
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
     
@@ -79,4 +79,4 @@ def episodes_search():
     user_results = get_responses_from_results(response, results)
     return user_results
 
-# app.run(debug=True)
+app.run(debug=True)
