@@ -27,24 +27,23 @@
      
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1" style="background-color:white;">
+            </div>
+
+            <div class="input-box">
+                <img src="{{ url_for('static', filename='images/mag.png') }}" />
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val2" style="background-color:white;">
             </div>
 
 
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val2">
-            </div>
-
-
-            <div class="input-box">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val3">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val3" style="background-color:white;">
             </div>
 
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you want in a new experience." id="filter-text-val4">
+                <input placeholder="Describe what you want in a new experience." id="filter-text-val4" style="background-color:white;">
             </div>
 
             <div class="button" onclick="sendFocus()">
@@ -58,11 +57,17 @@
 
     <script>
 
-        function answerBoxTemplate(attraction,state, description){
+        function answerBoxTemplate(attraction,state, description, rating){
             return `<li class='results'>
                 <h3 class='attraction'>${attraction}</h3>
                 <p class='state'>${state}</p>
-                <p class='desc'>${description}</p>
+                <div class="rating">
+                    <h4>${rating}</h4>
+                    <div>
+                        <button type="button"><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
+                        <button type="button"><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
+                    </div>
+                </div>
             </li>`
         }
 
@@ -95,7 +100,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attraction, row.state, row.description)
+                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text, row.rating)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 
