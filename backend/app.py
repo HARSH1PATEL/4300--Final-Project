@@ -42,7 +42,7 @@ def sql_search(query):
     # like_clause_str = ' OR '.join(like_clauses)
     # query_sql_city = query_init + like_clause_str
     query_sql = f"""SELECT * FROM attrs"""
-    keys = ["state_name","attr_name","desc_text"]
+    keys = ["state_name","attr_name","desc_text", "rating", "thumbs"]
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
@@ -56,6 +56,7 @@ def episodes_search():
     response = json.loads(sql_search(query))
     for result in response:
         desc = result['desc_text']
+        print(desc)
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
     

@@ -14,11 +14,17 @@
                 <h1>TravelForMe</h1>
             </div>
 
-            <div class="text">
-                <p id="instruct">Get travel recs by inputting what you liked about your previous travels below!</p>
+            <div class="description">
+                <p>
+                    We'll find the destinations and attractions that you would want to visit on your next trip. 
+                    We recommend new places to visit based on your inputs from previous travels, so we can properly
+                    account for your interests. In the search boxes below, type in key words that you enjoyed from
+                    your previous travels (up to three previous experiences) and in the final search box type in
+                    keywords that would describe your next ideal travel desintations and attractions. 
+                    Hit search and start traveling!
+                </p>
             </div>
      
-
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
                 <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1" style="background-color:white;">
@@ -46,17 +52,23 @@
 
         </div>
 
-        <div class="results-display" id="answer-box"></div>
+        <ul class="results-display" id="answer-box"></ul>
     </div>
 
     <script>
 
-        function answerBoxTemplate(attraction,state, description){
-            return `<div class='results'>
+        function answerBoxTemplate(attraction,state, description, rating){
+            return `<li class='results'>
                 <h3 class='attraction'>${attraction}</h3>
                 <p class='state'>${state}</p>
-                <p class='desc'>${description}</p>
-            </div>`
+                <div class="rating">
+                    <h4>${rating}</h4>
+                    <div>
+                        <button type="button"><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
+                        <button type="button"><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
+                    </div>
+                </div>
+            </li>`
         }
 
         function sendFocus(){
@@ -88,7 +100,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text)
+                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text, row.rating, row.thumbs)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 
