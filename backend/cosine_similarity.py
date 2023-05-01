@@ -250,8 +250,8 @@ def get_responses_from_results(response, results):
     """
     acc = []
     # print(results)
-    for x in range(21):
-        id = results[x][1]
+    for x in results:
+        id = x[1]
         acc.append(response[id])
-    return acc
+    return acc[:21]
 

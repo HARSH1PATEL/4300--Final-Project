@@ -48,6 +48,8 @@ def episodes_search():
     response = json.loads(sql_search(query))
     rating_dict = {}
     thumbs_dict = {}
+    response_arr = []
+    # print(response[0])
     for i in range(len(response)):
         result = response[i]
         desc = result['desc_text']
@@ -56,6 +58,7 @@ def episodes_search():
         result['toks'] = toks
         rating_dict[i] = result['rating']
         thumbs_dict[i] = result['thumbs']
+        response_arr.append(result)
     
     inv_idx = build_inverted_index(response)
     # print(inv_idx)
@@ -76,8 +79,12 @@ def episodes_search():
     for i in results:
         score = i[0]
         id = i[1]
+        
         response[id]['cosine'] = score
+        # print(response[id]['cosine'])
+    # print(results)
     user_results = get_responses_from_results(response, results)
+    # print(user_results)
     return user_results
 
 @app.route("/thumbsUp")
