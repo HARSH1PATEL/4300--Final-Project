@@ -57,6 +57,7 @@
 
     <script>
 
+
         function answerBoxTemplate(attraction,state, description, rating){
             return `<li class='results'>
                 <h3 class='attraction'>${attraction}</h3>
@@ -64,8 +65,8 @@
                 <div class="rating">
                     <h4>${rating}</h4>
                     <div>
-                        <button type="button"><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
-                        <button type="button"><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
+                        <button type="button" onclick="thumbUp(${attraction})""><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
+                        <button type="button" onclick="thumbDown(${attraction})""><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
                     </div>
                 </div>
             </li>`
@@ -76,6 +77,14 @@
             document.getElementById('filter-text-val2').focus()
             document.getElementById('filter-text-val3').focus()
             document.getElementById('filter-text-val4').focus()
+        }
+
+        function thumbUp(attraction){
+            fetch("/thumbsUp?" + new URLSearchParams({ attrac: attraction }).toString());
+        }
+
+        function thumbDown(attraction){
+            fetch("/thumbsDown?" + new URLSearchParams({ attrac: attraction }).toString());
         }
 
         function filterText(){

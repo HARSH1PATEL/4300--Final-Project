@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "mishakka"
+MYSQL_USER_PASSWORD = "gan4646"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "data"
 
@@ -33,14 +33,6 @@ CORS(app)
 #             3:'Geeks', 4:'for',
 #             5:'Geeks'}
 def sql_search(query):
-    # city = query.split("; ")[0]
-    # keywords = query.split("; ")[1].split()
-    # query_in = f"SELECT * FROM attrs LIMIT 500"
-    # like_clauses = []
-    # for x in range(len(keywords)):
-    #     like_clauses.append(f"LOWER(rev_text) LIKE '%%{keywords[x].lower()}%%'")
-    # like_clause_str = ' OR '.join(like_clauses)
-    # query_sql_city = query_init + like_clause_str
     query_sql = f"""SELECT * FROM attrs"""
     keys = ["state_name","attr_name","desc_text", "rating", "thumbs"]
     data = mysql_engine.query_selector(query_sql)
@@ -55,6 +47,7 @@ def episodes_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))
     rating_dict = {}
+    thumbs_dict = {}
     for i in range(len(response)):
         result = response[i]
         desc = result['desc_text']
@@ -62,6 +55,7 @@ def episodes_search():
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
         rating_dict[i] = result['rating']
+        thumbs_dict[i] = result['thumbs']
     
     inv_idx = build_inverted_index(response)
     # print(inv_idx)
@@ -79,8 +73,20 @@ def episodes_search():
     # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
     
-    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict)
+    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
     user_results = get_responses_from_results(response, results)
     return user_results
+
+@app.route("/thumbsUp")
+def tUP():
+    attrac = request.args.get("attrac")
+    query_sql = f"""UPDATE attrs SET thumbs=1.2*thumbs WHERE attr_name={attrac}"""
+    data = mysql_engine.query_executor(query_sql)
+
+@app.route("/thumbsDown")
+def tDown():
+    attrac = request.args.get("attrac")
+    query_sql = f"""UPDATE attrs SET thumbs=0 WHERE attr_name={attrac}"""
+    mysql_engine.query_executor(query_sql)
 
 app.run(debug=True)
