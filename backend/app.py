@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "AstroApes711"
+MYSQL_USER_PASSWORD = "mishakka"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "data"
 
@@ -34,11 +34,7 @@ CORS(app)
 #             5:'Geeks'}
 def sql_search(query):
     query_sql = f"""SELECT * FROM attrs"""
-<<<<<<< HEAD
-    keys = ["state","attraction","description"]
-=======
     keys = ["state_name","attr_name","desc_text", "rating", "thumbs"]
->>>>>>> 8793874da82a5c6d22f4bd11a16f4c5a38b0dbb3
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
@@ -53,11 +49,11 @@ def episodes_search():
     rating_dict = {}
     thumbs_dict = {}
     response_arr = []
-    # print(response[0])
+
     for i in range(len(response)):
         result = response[i]
         desc = result['desc_text']
-        # print(desc)
+       
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
         rating_dict[i] = result['rating']
@@ -65,9 +61,9 @@ def episodes_search():
         response_arr.append(result)
     
     inv_idx = build_inverted_index(response)
-    # print(inv_idx)
+ 
     idf = compute_idf(inv_idx=inv_idx, n_docs=len(response))
-    # print(idf)
+
     doc_norms = compute_doc_norms(inv_idx, idf, len(response))
     query_words = {}
     for word in TreebankWordTokenizer().tokenize(query):
@@ -75,9 +71,9 @@ def episodes_search():
             query_words[word] += 1
         else:
             query_words[word] = 1
-    # print(query_words)
+
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
-    # print(inv_idx)
+
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
     results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
     for i in results:
@@ -85,22 +81,22 @@ def episodes_search():
         id = i[1]
         
         response[id]['cosine'] = score
-        # print(response[id]['cosine'])
-    # print(results)
     user_results = get_responses_from_results(response, results)
-    # print(user_results)
     return user_results
 
-@app.route("/thumbsUp")
+@app.route("/thumbsUp",methods=["POST"])
 def tUP():
-    attrac = request.args.get("attrac")
-    query_sql = f"""UPDATE attrs SET thumbs=1.2*thumbs WHERE attr_name={attrac}"""
-    data = mysql_engine.query_executor(query_sql)
-
-@app.route("/thumbsDown")
-def tDown():
-    attrac = request.args.get("attrac")
-    query_sql = f"""UPDATE attrs SET thumbs=0 WHERE attr_name={attrac}"""
+    attrac = request.get_json().get("attrac","error")
+    query_sql = f"""UPDATE attrs SET thumbs=2*thumbs WHERE attr_name='{attrac}'"""
     mysql_engine.query_executor(query_sql)
+    return "Complete",200
 
-app.run(debug=True)
+@app.route("/thumbsDown",methods=["POST"])
+def tDown():
+    attrac = request.get_json().get("attrac","error")
+    print("ATTRAC HERE",attrac)
+    query_sql = f"""UPDATE attrs SET thumbs=0 WHERE attr_name='{attrac}'"""
+    mysql_engine.query_executor(query_sql)
+    return "Complete",200
+
+# app.run(debug=True)

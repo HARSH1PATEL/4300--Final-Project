@@ -24,6 +24,7 @@
                     <p>In the search boxes below, type in keywords describing what you liked about
                         your previous travels and in the final search box describe your next ideal travel desintations and attractions. 
                         Hit search and start traveling!</p>
+                    <p>Use the "thumbs up" 👍 and "thumbs down" 👎 to indicate whether results match your preferences - this will boost the relevance of the results for each future search!</p>
             </div>
      
             <div class="input-box">
@@ -67,16 +68,18 @@
                 <p class='state'>${state}</p>
                 <h4 class='desc'>${description}</h4>
                 <div class="rating">
-                    <h4>Cosine Score: ${cosine}</h4>
+                    <h4>Similarity Score: ${cosine}</h4>
                     <h4>Star Rating: ${rating}</h4>
                     <div>
-                        <button type="button" onclick="thumbUp(${attraction})""><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
-                        <button type="button" onclick="thumbDown(${attraction})""><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
+                        <button class="button" onclick="thumbUp('${attraction}')"><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
+                        <button class="button" onclick="thumbDown('${attraction}')"><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
                     </div>
                 </div>
             </li>`
         }
-
+        function userInput(){
+            return `<p>THANK YOU FOR YOUR FEEDBACK</p>`
+        }
         function sendFocus(){
             document.getElementById('filter-text-val1').focus()
             document.getElementById('filter-text-val2').focus()
@@ -84,12 +87,13 @@
             document.getElementById('filter-text-val4').focus()
         }
 
-        function thumbUp(attraction){
-            fetch("/thumbsUp?" + new URLSearchParams({ attrac: attraction }).toString());
+        async function thumbUp(attraction){
+            res = await fetch("/thumbsUp" ,{method:"POST",headers:{"Content-Type":"application/json"},body : JSON.stringify({attrac: attraction })});
+   
         }
-
-        function thumbDown(attraction){
-            fetch("/thumbsDown?" + new URLSearchParams({ attrac: attraction }).toString());
+        async function thumbDown(attraction){
+            res = await fetch("/thumbsDown" ,{method:"POST",headers:{"Content-Type":"application/json"},body : JSON.stringify({attrac: attraction })});
+   
         }
 
         function filterText(){
@@ -114,7 +118,6 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                console.log(row.cosine)
                 tempDiv.innerHTML = answerBoxTemplate(row['attr_name'], row['state_name'], row['desc_text'], row['rating'], row['cosine'])
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
