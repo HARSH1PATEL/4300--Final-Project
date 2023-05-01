@@ -66,7 +66,7 @@ def build_inverted_index(msgs):
 
 
 
-def compute_idf(inv_idx, n_docs, min_df=0, max_df_ratio=0.95):
+def compute_idf(inv_idx, n_docs, min_df=5, max_df_ratio=0.95):
     """ Compute term IDF values from the inverted index.
     Words that are too frequent or too infrequent get pruned.
     
@@ -185,7 +185,7 @@ def accumulate_dot_scores(query_word_counts, index, idf):
     return doc_scores
 
 
-def index_search(query, index, idf, doc_norms, scores, score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer):
+def index_search(query, index, idf, doc_norms, scores, rating_dict, thumbs_dict, score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer):
     """ Search the collection of documents for the given query
     
     Arguments
@@ -239,7 +239,8 @@ def index_search(query, index, idf, doc_norms, scores, score_func=accumulate_dot
     q_norm = q_norm**(1/2)
     for doc_id in scores:
         denom = q_norm*doc_norms[doc_id]
-        lst.append((scores[doc_id]/denom, doc_id))
+        sc = (scores[doc_id]/denom)*(1+rating_dict[doc_id]*thumbs_dict[doc_id])
+        lst.append((sc, doc_id))
     lst.sort(key=sortFirst, reverse=True)
     return lst
 
@@ -248,8 +249,9 @@ def get_responses_from_results(response, results):
     Take results of index search and get list of attractions
     """
     acc = []
-    for tup in results:
-        id = tup[1]
+    # print(results)
+    for x in results:
+        id = x[1]
         acc.append(response[id])
-    return acc
+    return acc[:21]
 

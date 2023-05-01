@@ -33,16 +33,12 @@ CORS(app)
 #             3:'Geeks', 4:'for',
 #             5:'Geeks'}
 def sql_search(query):
-    # city = query.split("; ")[0]
-    # keywords = query.split("; ")[1].split()
-    # query_in = f"SELECT * FROM attrs LIMIT 500"
-    # like_clauses = []
-    # for x in range(len(keywords)):
-    #     like_clauses.append(f"LOWER(rev_text) LIKE '%%{keywords[x].lower()}%%'")
-    # like_clause_str = ' OR '.join(like_clauses)
-    # query_sql_city = query_init + like_clause_str
     query_sql = f"""SELECT * FROM attrs"""
+<<<<<<< HEAD
     keys = ["state","attraction","description"]
+=======
+    keys = ["state_name","attr_name","desc_text", "rating", "thumbs"]
+>>>>>>> 8793874da82a5c6d22f4bd11a16f4c5a38b0dbb3
     data = mysql_engine.query_selector(query_sql)
     return json.dumps([dict(zip(keys,i)) for i in data])
 
@@ -54,10 +50,19 @@ def home():
 def episodes_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))
-    for result in response:
-        desc = result['description']
+    rating_dict = {}
+    thumbs_dict = {}
+    response_arr = []
+    # print(response[0])
+    for i in range(len(response)):
+        result = response[i]
+        desc = result['desc_text']
+        # print(desc)
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
+        rating_dict[i] = result['rating']
+        thumbs_dict[i] = result['thumbs']
+        response_arr.append(result)
     
     inv_idx = build_inverted_index(response)
     # print(inv_idx)
@@ -74,9 +79,28 @@ def episodes_search():
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
     # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
-    # print(scores)
-    results = index_search(query, inv_idx, idf, doc_norms, scores)
+    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
+    for i in results:
+        score = i[0]
+        id = i[1]
+        
+        response[id]['cosine'] = score
+        # print(response[id]['cosine'])
+    # print(results)
     user_results = get_responses_from_results(response, results)
+    # print(user_results)
     return user_results
+
+@app.route("/thumbsUp")
+def tUP():
+    attrac = request.args.get("attrac")
+    query_sql = f"""UPDATE attrs SET thumbs=1.2*thumbs WHERE attr_name={attrac}"""
+    data = mysql_engine.query_executor(query_sql)
+
+@app.route("/thumbsDown")
+def tDown():
+    attrac = request.args.get("attrac")
+    query_sql = f"""UPDATE attrs SET thumbs=0 WHERE attr_name={attrac}"""
+    mysql_engine.query_executor(query_sql)
 
 app.run(debug=True)

@@ -4,46 +4,47 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+
 
 <body>
-    <div class="full-body-container">
+    <div class="full-body-container" style="background-color: lightblue;">
 
         <div class="top-text">
 
             <div class="title">
-                <h1>TravelForMe</h1>
+                <h1>🌴 TravelForMe 🌴</h1>
             </div>
 
             <div class="description">
                 <p>
-                    We'll find the destinations and attractions that you would want to visit on your next trip. 
-                    We recommend new places to visit based on your inputs from previous travels, so we can properly
-                    account for your interests. In the search boxes below, type in key words that you enjoyed from
-                    your previous travels (up to three previous experiences) and in the final search box type in
-                    keywords that would describe your next ideal travel desintations and attractions. 
-                    Hit search and start traveling!
-                </p>
+                    Travel Suggestions Created Just For You! We'll suggest destinations and attractions that you may want to visit on your next trip, based on 
+                    your reviews of past experiences! Tell us what you liked about 1-3 past travel experiences, and tell us what you're looking for in your next trip.
+                    </p>
+                    <p>In the search boxes below, type in keywords describing what you liked about
+                        your previous travels and in the final search box describe your next ideal travel desintations and attractions. 
+                        Hit search and start traveling!</p>
             </div>
      
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1" style="background-color:white;">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val1">
             </div>
 
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val2" style="background-color:white;">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val2" >
             </div>
 
 
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val3" style="background-color:white;">
+                <input placeholder="Describe what you liked about a previous experience." id="filter-text-val3">
             </div>
 
             <div class="input-box">
                 <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Describe what you want in a new experience." id="filter-text-val4" style="background-color:white;">
+                <input placeholder="Describe what you want in a new experience." id="filter-text-val4">
             </div>
 
             <div class="button" onclick="sendFocus()">
@@ -52,20 +53,23 @@
 
         </div>
 
-        <ul class="results-display" id="answer-box"></ul>
+        <ul class="results-display" id="answer-box" style="background-color: lightblue;"></ul>
     </div>
 
     <script>
 
-        function answerBoxTemplate(attraction,state, description, rating){
+
+        function answerBoxTemplate(attraction,state, description, rating, cosine){
             return `<li class='results'>
                 <h3 class='attraction'>${attraction}</h3>
                 <p class='state'>${state}</p>
+                <h4 class='desc'>${description}</h4>
                 <div class="rating">
-                    <h4>${rating}</h4>
+                    <h4>Cosine Score: ${cosine}</h4>
+                    <h4>Star Rating: ${rating}</h4>
                     <div>
-                        <button type="button"><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
-                        <button type="button"><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
+                        <button type="button" onclick="thumbUp(${attraction})""><img src="{{ url_for('static', filename='images/up.jpg') }}"/></button>
+                        <button type="button" onclick="thumbDown(${attraction})""><img src="{{ url_for('static', filename='images/down.jpg') }}"/></button>
                     </div>
                 </div>
             </li>`
@@ -76,6 +80,14 @@
             document.getElementById('filter-text-val2').focus()
             document.getElementById('filter-text-val3').focus()
             document.getElementById('filter-text-val4').focus()
+        }
+
+        function thumbUp(attraction){
+            fetch("/thumbsUp?" + new URLSearchParams({ attrac: attraction }).toString());
+        }
+
+        function thumbDown(attraction){
+            fetch("/thumbsDown?" + new URLSearchParams({ attrac: attraction }).toString());
         }
 
         function filterText(){
@@ -100,7 +112,8 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text, row.rating)
+                console.log(row.cosine)
+                tempDiv.innerHTML = answerBoxTemplate(row['attr_name'], row['state_name'], row['desc_text'], row['rating'], row['cosine'])
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 
