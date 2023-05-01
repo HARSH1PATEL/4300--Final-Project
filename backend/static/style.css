@@ -92,6 +92,7 @@ body {
     grid-gap: 10px;
     font-family: 'Open Sans', sans-serif;
     background-color: lightblue;
+    padding:0;
 }
 
 .results {
@@ -127,7 +128,6 @@ body {
 
 .rating {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
     font-family: 'Open Sans', sans-serif;
@@ -150,4 +150,11 @@ hr {
     width:50%;
     border: 2px solid white;
     background-color: white;
+}
+
+.result-hr {
+    margin-top: 5px;
+    border: 1px solid black;
+    background-color: black;
+    width:90%;
 }
