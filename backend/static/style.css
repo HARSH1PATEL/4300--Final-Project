@@ -1,10 +1,13 @@
 .title {
-    font-size: 20px;
+    font-size: 35px;
+    font-family: 'Bebas Neue';
+    margin-bottom: 0px;
 }
 
 .text {
     font-size: 20px;
     margin-top: -20px;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .full-body-container{
@@ -19,6 +22,7 @@
     justify-content: start;
     align-items: center;
     flex-direction: column;
+    background-color: lightblue;
 }
 
 .input-box{
@@ -38,8 +42,9 @@
 .button button {
     border-radius: 50px;
     font-size: 18px;
+    padding: 12px;
     border-color: black;
-    background-color: transparent;
+    background-color: rgb(255, 255, 255);
 }
 
 .input-box img{
@@ -51,9 +56,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url('images/background.jpg');
+    /* background-image: url('images/background.jpg'); */
+    /* background-color: teal; */
     background-repeat: no-repeat;
     width: 100%;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .input-box input{
@@ -63,6 +70,7 @@
     border: none;
     outline: 0;
     background-color: transparent;
+    font-family: 'Open Sans', sans-serif;
 }
 
 #answer-box{
@@ -75,6 +83,8 @@
     list-style: none;
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 10px;
+    font-family: 'Open Sans', sans-serif;
+    background-color: lightblue;
 }
 
 .results {
@@ -84,20 +94,28 @@
     border: solid 2px black;
     margin-bottom: 10px;
     padding:15px;
-    background-color: white;
+    background-color: lightblue;
     border-radius: 20px;
+    height: 30em;
 }
 
 .attraction {
     width: 100%;
     margin: auto;
     font-size: 25px;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .description {
     margin: auto;
     width:50%;
     text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.desc {
+    overflow: scroll;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .rating {
@@ -105,6 +123,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .results img {

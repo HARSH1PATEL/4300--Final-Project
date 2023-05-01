@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "gan4646"
+MYSQL_USER_PASSWORD = "mishakka"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "data"
 
@@ -72,11 +72,11 @@ def episodes_search():
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
     # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
+    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
     for i in results:
         score = i[0]
         id = i[1]
         response[id]['cosine'] = score
-    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
     user_results = get_responses_from_results(response, results)
     return user_results
 
