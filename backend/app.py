@@ -54,11 +54,14 @@ def home():
 def episodes_search():
     query = request.args.get("title")
     response = json.loads(sql_search(query))
-    for result in response:
+    rating_dict = {}
+    for i in range(len(response)):
+        result = response[i]
         desc = result['desc_text']
-        print(desc)
+        # print(desc)
         toks = TreebankWordTokenizer().tokenize(desc)
         result['toks'] = toks
+        rating_dict[i] = result['rating']
     
     inv_idx = build_inverted_index(response)
     # print(inv_idx)
@@ -75,8 +78,8 @@ def episodes_search():
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
     # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
-    # print(scores)
-    results = index_search(query, inv_idx, idf, doc_norms, scores)
+    
+    results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict)
     user_results = get_responses_from_results(response, results)
     return user_results
 
