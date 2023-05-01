@@ -109,7 +109,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text, row.rating, row.thumbs)
+                tempDiv.innerHTML = answerBoxTemplate(row.attr_name, row.state_name, row.desc_text, row.rating, row.thumbs, row.cosine)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 

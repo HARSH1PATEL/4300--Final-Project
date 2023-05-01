@@ -249,7 +249,7 @@ def get_responses_from_results(response, results):
     Take results of index search and get list of attractions
     """
     acc = []
-    print(results)
+    # print(results)
     for x in range(21):
         id = results[x][1]
         acc.append(response[id])

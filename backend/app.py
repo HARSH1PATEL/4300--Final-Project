@@ -72,7 +72,10 @@ def episodes_search():
     inv_idx = {key: val for key, val in inv_idx.items() if key in idf}
     # print(inv_idx)
     scores = accumulate_dot_scores(query_words, inv_idx, idf)
-    
+    for i in results:
+        score = i[0]
+        id = i[1]
+        response[id]['cosine'] = score
     results = index_search(query, inv_idx, idf, doc_norms, scores, rating_dict, thumbs_dict)
     user_results = get_responses_from_results(response, results)
     return user_results
