@@ -94,9 +94,8 @@ def tUP():
 @app.route("/thumbsDown",methods=["POST"])
 def tDown():
     attrac = request.get_json().get("attrac","error")
-    print("ATTRAC HERE",attrac)
     query_sql = f"""UPDATE attrs SET thumbs=0 WHERE attr_name='{attrac}'"""
     mysql_engine.query_executor(query_sql)
     return "Complete",200
 
-# app.run(debug=True)
+app.run(debug=True)
